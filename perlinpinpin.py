@@ -240,7 +240,7 @@ class Perlinpinpin(object):
             m = r.match(input.strip())
             if m:
                 return f(m)
-        raise ValueError()
+        raise ValueError
     
     def _normalize(self, input):
         import unicodedata
