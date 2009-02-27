@@ -18,6 +18,11 @@ class TestPerlinpinpin(unittest.TestCase):
     def tearDown(self):
         datetime.date = self.old_date
     
+    def test_exception(self):
+        self.assertRaises(ValueError, self.perlinpinpin, u"4 Jnaier")
+        self.assertRaises(ValueError, self.perlinpinpin, u"Luni prochain")
+        self.assertRaises(ValueError, self.perlinpinpin, u"supercalifragilisticexpialidocious")
+    
     def test_today(self):
         self.assertEqual(self.perlinpinpin(u"aujourd'hui"), datetime.date(2009, 3, 6))
     

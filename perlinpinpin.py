@@ -240,6 +240,7 @@ class Perlinpinpin(object):
             m = r.match(input.strip())
             if m:
                 return f(m)
+        raise ValueError()
     
     def _normalize(self, input):
         import unicodedata
@@ -251,7 +252,7 @@ class Perlinpinpin(object):
             p = re.compile(input, re.IGNORECASE)
             if p.match(month): return i+1
         else:
-            raise Exception
+            raise ValueError
     
     def _parseWeekday(self, input):
         days = "Lundi Mardi Mercredi Jeudi Vendredi Samedi Dimanche".split(' ')
@@ -259,21 +260,20 @@ class Perlinpinpin(object):
             p = re.compile(input, re.IGNORECASE)
             if p.match(day): return i
         else:
-            raise Exception
+            raise ValueError
     
     def _nextWeekday(self, weekday):
         day = datetime.date.today() + datetime.timedelta(days=1)
         while calendar.weekday(*day.timetuple()[:3]) != weekday:
             day = day + datetime.timedelta(days=1)
         return day
-
+    
     def _lastWeekday(self, weekday):
         day = datetime.date.today() - datetime.timedelta(days=1)
         while calendar.weekday(*day.timetuple()[:3]) != weekday:
             day = day - datetime.timedelta(days=1)
         return day
     
-
 
 def perlinpinpin(input, tz=None):
     return Perlinpinpin().parse(input, tz)
