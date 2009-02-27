@@ -5,8 +5,8 @@ import perlinpinpin
  
 setup(name='perlinpinpin',
       version=perlinpinpin.__version__,
-      description='Convert fuzzy date to a datetime object, but from french format.',
-      long_description="Convert from fuzzy dates like 'hier', 'il y a 1 semaine et 1 jour', 'mardi prochain', '4 Janvier', etc., to a datetime object.",
+      description='Convert french fuzzy date to a python datetime object.',
+      long_description="Convert from french fuzzy dates like 'hier', 'il y a 1 semaine et 1 jour', 'mardi prochain', '4 Janvier', etc., to a datetime object.",
       py_modules = ['perlinpinpin'],
       license = 'MIT License',
       keywords = "convert fuzzy date datetime time french",
