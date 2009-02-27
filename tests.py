@@ -79,6 +79,7 @@ class TestPerlinpinpin(unittest.TestCase):
         self.assertEqual(self.perlinpinpin(u"il y a 2 jours"), datetime.date(2009, 3, 4))
         self.assertEqual(self.perlinpinpin(u"il y a 1 semaine"), datetime.date(2009, 2, 27))
         self.assertEqual(self.perlinpinpin(u"il y a 2 semaines"), datetime.date(2009, 2, 20))
+        self.assertEqual(self.perlinpinpin(u"il y a 1 semaine et 3 jours"), datetime.date(2009, 2, 24))
     
 
 if __name__ == '__main__':
