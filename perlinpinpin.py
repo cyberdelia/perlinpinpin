@@ -27,11 +27,33 @@ class Perlinpinpin(object):
                     minutes=int(m.group('minutes') or 0),
                     hours=int(m.group('hours') or 0),
                     weeks=int(m.group('weeks') or 0))),
+            
+            # Dans x 
+            (re.compile(
+                r'''^
+                    dans\s
+                    ((?P<weeks>\d+) \s semaine(s?)?)?
+                    [^\d]*
+                    ((?P<days>\d+) \s jour(s?)?)?
+                    [^\d]*
+                    ((?P<hours>\d+) \s heure(s?)?)?
+                    [^\d]*
+                    ((?P<minutes>\d+) \s minute(s?)?)?
+                    [^\d]*
+                    ((?P<seconds>\d+) \s seconde(s?)?)?
+                ''',
+                (re.VERBOSE | re.IGNORECASE)),
+            lambda m: datetime.date.today() + datetime.timedelta(
+                    days=int(m.group('days') or 0),
+                    seconds=int(m.group('seconds') or 0),
+                    minutes=int(m.group('minutes') or 0),
+                    hours=int(m.group('hours') or 0),
+                    weeks=int(m.group('weeks') or 0))),
         
             # Today
             (re.compile(
                 r'''^
-                    aujourd\'hui                    # Today
+                    aujourd\'?hui                    # Today
                 ''',
                 (re.VERBOSE | re.IGNORECASE)),
             lambda m: datetime.date.today()),

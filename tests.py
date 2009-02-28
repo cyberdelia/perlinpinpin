@@ -25,6 +25,7 @@ class TestPerlinpinpin(unittest.TestCase):
     
     def test_today(self):
         self.assertEqual(self.perlinpinpin(u"aujourd'hui"), datetime.date(2009, 3, 6))
+        self.assertEqual(self.perlinpinpin(u"aujourdhui"), datetime.date(2009, 3, 6))
     
     def test_yesterday(self):
         self.assertEqual(self.perlinpinpin(u"hier"), datetime.date(2009, 3, 5))
@@ -79,6 +80,12 @@ class TestPerlinpinpin(unittest.TestCase):
     def test_iso_style(self):
         self.assertEqual(self.perlinpinpin(u"2009-01-09"), datetime.date(2009, 1, 9))
         self.assertEqual(self.perlinpinpin(u"2009-1-9"), datetime.date(2009, 1, 9))
+    
+    def test_time_ahead(self):
+        self.assertEqual(self.perlinpinpin(u"dans 2 jours"), datetime.date(2009, 3, 8))
+        self.assertEqual(self.perlinpinpin(u"dans 1 semaine"), datetime.date(2009, 3, 13))
+        self.assertEqual(self.perlinpinpin(u"dans 2 semaines"), datetime.date(2009, 3, 20))
+        self.assertEqual(self.perlinpinpin(u"dans 1 semaine et 3 jours"), datetime.date(2009, 3, 16))
     
     def test_time_ago(self):
         self.assertEqual(self.perlinpinpin(u"il y a 2 jours"), datetime.date(2009, 3, 4))
