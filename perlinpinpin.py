@@ -104,6 +104,7 @@ class Perlinpinpin(object):
                     (le                             # le
                     \s+)?                           # whitespace
                     (?P<day>\d{1,2})                # 4
+                    (?:ier|er|iere)?                # optional suffix
                     $                               # EOL
                 ''',
                 (re.VERBOSE | re.IGNORECASE)),
@@ -116,6 +117,7 @@ class Perlinpinpin(object):
                     (le                             # le
                     \s+)?                           # whitespace
                     (?P<day>\d{1,2})                # 4
+                    (?:ier|er|iere)?                # optional suffix
                     \s+                             # whitespace
                     (?P<month>\w+)                  # Janvier
                     $                               # EOL
@@ -131,6 +133,7 @@ class Perlinpinpin(object):
                     (le                             # le
                     \s+)?                           # whitespace
                     (?P<day>\d{1,2})                # 4
+                    (?:ier|er|iere)?                # optional suffix
                     \s+                             # whitespace
                     (?P<month>\w+)                  # Janvier
                     ,?                              # optional comma
@@ -147,6 +150,8 @@ class Perlinpinpin(object):
             # dd/mm/yyyy (European style, default in case of doubt)
             (re.compile(
                 r'''^
+                    (le                             # le
+                    \s+)?                           # whitespace
                     (?P<day>0?[1-9]|[12]\d|30|31)   # d or dd
                     /                               #
                     (?P<month>0?[1-9]|10|11|12)     # m or mm
@@ -210,7 +215,7 @@ class Perlinpinpin(object):
             (re.compile(
                 r'''^
                     (la                             # la
-                    \s+)?                            # whitespace
+                    \s+)?                           # whitespace
                     semaine                         # week
                     \s+                             # whitespace
                     derniere                        # last
@@ -269,7 +274,7 @@ class Perlinpinpin(object):
         return unicodedata.normalize('NFKD', unicode(input)).encode('ASCII', 'ignore')
     
     def _parseMonth(self, input):
-        months = "Janvier Février Mars Avril Mai Juin Juillet Août Septembre Octobre Novembre Decembre".split(' ')
+        months = "Janvier Fevrier Mars Avril Mai Juin Juillet Aout Septembre Octobre Novembre Decembre".split(' ')
         for i, month in enumerate(months):
             p = re.compile(input, re.IGNORECASE)
             if p.match(month): return i+1
