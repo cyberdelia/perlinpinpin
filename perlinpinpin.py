@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import os, re, datetime, calendar
 
-__version__ = 0.2
+__version__ = 0.3
 
 class Perlinpinpin(object):
     def __init__(self):
@@ -103,6 +103,7 @@ class Perlinpinpin(object):
                 r'''^
                     (le                             # le
                     \s+)?                           # whitespace
+                    (\w+\s+)?                       # vendredi
                     (?P<day>\d{1,2})                # 4
                     (?:ier|er|iere)?                # optional suffix
                     $                               # EOL
@@ -116,6 +117,7 @@ class Perlinpinpin(object):
                 r'''^
                     (le                             # le
                     \s+)?                           # whitespace
+                    (\w+\s+)?                       # vendredi
                     (?P<day>\d{1,2})                # 4
                     (?:ier|er|iere)?                # optional suffix
                     \s+                             # whitespace
@@ -132,6 +134,7 @@ class Perlinpinpin(object):
                 r'''^
                     (le                             # le
                     \s+)?                           # whitespace
+                    (\w+\s+)?                       # vendredi
                     (?P<day>\d{1,2})                # 4
                     (?:ier|er|iere)?                # optional suffix
                     \s+                             # whitespace
@@ -156,7 +159,7 @@ class Perlinpinpin(object):
                     /                               #
                     (?P<month>0?[1-9]|10|11|12)     # m or mm
                     /                               #
-                    (?P<year>\d{4})                 # yyyy
+                    (?P<year>\d{4})               # yyyy
                     $                               # EOL
                 ''',
                 (re.VERBOSE | re.IGNORECASE)),
@@ -172,7 +175,7 @@ class Perlinpinpin(object):
                     /                               #
                     (?P<day>0?[1-9]|[12]\d|30|31)   # d or dd
                     /                               #
-                    (?P<year>\d{4})                 # yyyy
+                    (?P<year>\d{4})               # yyyy
                     $                               # EOL
                 ''',
                 (re.VERBOSE | re.IGNORECASE)),

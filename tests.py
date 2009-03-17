@@ -36,7 +36,7 @@ class TestPerlinpinpin(unittest.TestCase):
     
     def test_tomorrow(self):
         self.assertEqual(self.perlinpinpin(u"demain"), datetime.date(2009, 3, 7))
-        
+    
     def test_after_tomorrow(self):
         self.assertEqual(self.perlinpinpin(u"après-demain"), datetime.date(2009, 3, 8))
         self.assertEqual(self.perlinpinpin(u"après demain"), datetime.date(2009, 3, 8))
@@ -57,20 +57,26 @@ class TestPerlinpinpin(unittest.TestCase):
     
     def test_day(self):
         self.assertEqual(self.perlinpinpin(u"4"), datetime.date(2009, 3, 4))
+        self.assertEqual(self.perlinpinpin(u"vendredi 4"), datetime.date(2009, 3, 4))
         self.assertEqual(self.perlinpinpin(u"le 4"), datetime.date(2009, 3, 4))
+        self.assertEqual(self.perlinpinpin(u"le vendredi 4"), datetime.date(2009, 3, 4))
         self.assertEqual(self.perlinpinpin(u"le 1er"), datetime.date(2009, 3, 1))
         self.assertEqual(self.perlinpinpin(u"le 1ier"), datetime.date(2009, 3, 1))
     
     def test_day_and_month(self):
         self.assertEqual(self.perlinpinpin(u"4 Avril"), datetime.date(2009, 4, 4))
+        self.assertEqual(self.perlinpinpin(u"Mardi 4 Avril"), datetime.date(2009, 4, 4))
         self.assertEqual(self.perlinpinpin(u"le 4 Avril"), datetime.date(2009, 4, 4))
+        self.assertEqual(self.perlinpinpin(u"le mardi 4 Avril"), datetime.date(2009, 4, 4))
         self.assertEqual(self.perlinpinpin(u"4 Fevrier"), datetime.date(2009, 2, 4))
         self.assertEqual(self.perlinpinpin(u"4 Février"), datetime.date(2009, 2, 4))
         self.assertEqual(self.perlinpinpin(u"le 1er février"), datetime.date(2009, 2, 1))
-        
+    
     def test_day_and_month_and_year(self):
         self.assertEqual(self.perlinpinpin(u"4 Avril 2008"), datetime.date(2008, 4, 4))
+        self.assertEqual(self.perlinpinpin(u"Vendredi 4 Avril 2008"), datetime.date(2008, 4, 4))
         self.assertEqual(self.perlinpinpin(u"le 4 Avril 2008"), datetime.date(2008, 4, 4))
+        self.assertEqual(self.perlinpinpin(u"le Mardi 4 Avril 2008"), datetime.date(2008, 4, 4))
         self.assertEqual(self.perlinpinpin(u"le 1er février 2008"), datetime.date(2008, 2, 1))
     
     def test_european_style(self):
@@ -97,7 +103,7 @@ class TestPerlinpinpin(unittest.TestCase):
         self.assertEqual(self.perlinpinpin(u"il y a 1 semaine"), datetime.date(2009, 2, 27))
         self.assertEqual(self.perlinpinpin(u"il y a 2 semaines"), datetime.date(2009, 2, 20))
         self.assertEqual(self.perlinpinpin(u"il y a 1 semaine et 3 jours"), datetime.date(2009, 2, 24))
-    
+
 
 if __name__ == '__main__':
     unittest.main()
