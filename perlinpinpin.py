@@ -58,13 +58,13 @@ class Perlinpinpin(object):
                 (re.VERBOSE | re.IGNORECASE)),
             lambda m: datetime.date.today()),
         
-            # Now (special case, returns datetime.datetime
+            # Now
             (re.compile(
                 r'''^
                     maintenant                      # Now
                 ''',
                 (re.VERBOSE | re.IGNORECASE)),
-            lambda m: datetime.datetime.now()),
+            lambda m: datetime.date.today()),
         
             # Tomorrow
             (re.compile(

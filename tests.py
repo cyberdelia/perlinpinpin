@@ -23,6 +23,9 @@ class TestPerlinpinpin(unittest.TestCase):
         self.assertRaises(ValueError, self.perlinpinpin, u"Luni prochain")
         self.assertRaises(ValueError, self.perlinpinpin, u"supercalifragilisticexpialidocious")
     
+    def test_now(self):
+        self.assertEqual(self.perlinpinpin(u"maintenant"), datetime.date(2009, 3, 6))
+    
     def test_today(self):
         self.assertEqual(self.perlinpinpin(u"aujourd'hui"), datetime.date(2009, 3, 6))
         self.assertEqual(self.perlinpinpin(u"aujourdhui"), datetime.date(2009, 3, 6))
