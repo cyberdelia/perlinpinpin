@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import os, re, datetime, calendar
 
-__version__ = 0.4
+__version__ = 0.5
 
 class Perlinpinpin(object):
     def __init__(self):
@@ -98,6 +98,16 @@ class Perlinpinpin(object):
                 (re.VERBOSE | re.IGNORECASE)),
             lambda m: datetime.date.today() - datetime.timedelta(days=2)),
         
+            # This morning
+            (re.compile(
+                r'''^
+                    (ce\s+)?                        # this
+                    matin                           # morning
+                    $                               # EOL
+                ''',
+                (re.VERBOSE | re.IGNORECASE)),
+            lambda m: datetime.date.today()),
+                                 
             # 4
             (re.compile(
                 r'''^
