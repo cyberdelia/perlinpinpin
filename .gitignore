@@ -1,3 +1,5 @@
 *.pyc
 *.tmproj
 *.egg-info
+build
+dist
