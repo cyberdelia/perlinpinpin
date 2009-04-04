@@ -107,7 +107,17 @@ class Perlinpinpin(object):
                 ''',
                 (re.VERBOSE | re.IGNORECASE)),
             lambda m: datetime.date.today()),
-                                 
+            
+            # This afternoon
+            (re.compile(
+                r'''^
+                    (cet\s+)?                       # this
+                    apres\-?midi                    # afternoon
+                    $                               # EOL
+                ''',
+                (re.VERBOSE | re.IGNORECASE)),
+            lambda m: datetime.date.today()),
+            
             # 4
             (re.compile(
                 r'''^
