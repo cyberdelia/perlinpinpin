@@ -125,7 +125,7 @@ class Perlinpinpin(object):
                     \s+)?                           # whitespace
                     (\w+\s+)?                       # vendredi
                     (?P<day>\d{1,2})                # 4
-                    (?:ier|er|iere)?                # optional suffix
+                    (?:(\s+)?(ier|er|iere))?        # optional suffix
                     $                               # EOL
                 ''',
                 (re.VERBOSE | re.IGNORECASE)),
@@ -139,7 +139,7 @@ class Perlinpinpin(object):
                     \s+)?                           # whitespace
                     (\w+\s+)?                       # vendredi
                     (?P<day>\d{1,2})                # 4
-                    (?:ier|er|iere)?                # optional suffix
+                    (?:(\s+)?(ier|er|iere))?        # optional suffix
                     \s+                             # whitespace
                     (?P<month>\w+)                  # Janvier
                     $                               # EOL
@@ -156,7 +156,7 @@ class Perlinpinpin(object):
                     \s+)?                           # whitespace
                     (\w+\s+)?                       # vendredi
                     (?P<day>\d{1,2})                # 4
-                    (?:ier|er|iere)?                # optional suffix
+                    (?:(\s+)?(ier|er|iere))?        # optional suffix
                     \s+                             # whitespace
                     (?P<month>\w+)                  # Janvier
                     ,?                              # optional comma
