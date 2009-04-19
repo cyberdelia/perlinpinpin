@@ -6,13 +6,11 @@ Perlinpinpin - Convert french fuzzy date to a python datetime object.
 Synopsis
 ========
 
-::
-
     >>> from perlinpinpin import perlinpinpin
     >>> perlinpinpin('il y a 3 jours')
     datetime.date(2009, 2, 28)
-		>>> perlinpinpin('dans 3 jours')
-		datetime.date(2009, 3, 6)
+    >>> perlinpinpin('dans 3 jours')
+    datetime.date(2009, 3, 6)
 
 Description
 ===========
