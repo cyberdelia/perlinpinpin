@@ -40,6 +40,10 @@ class TestPerlinpinpin(unittest.TestCase):
         self.assertEqual(self.perlinpinpin(u"apresmidi"), datetime.date(2009, 3, 6))
         self.assertEqual(self.perlinpinpin(u"cet apresmidi"), datetime.date(2009, 3, 6))
     
+    def test_this_evening(self):
+        self.assertEqual(self.perlinpinpin(u"soir"), datetime.date(2009, 3, 6))
+        self.assertEqual(self.perlinpinpin(u"ce soir"), datetime.date(2009, 3, 6))
+    
     def test_yesterday(self):
         self.assertEqual(self.perlinpinpin(u"hier"), datetime.date(2009, 3, 5))
     

@@ -118,6 +118,16 @@ class Perlinpinpin(object):
                 (re.VERBOSE | re.IGNORECASE)),
             lambda m: datetime.date.today()),
             
+            # This evening
+            (re.compile(
+                r'''^
+                    (ce\s+)?                        # this
+                    soir                            # evening
+                    $                               # EOL
+                ''',
+                (re.VERBOSE | re.IGNORECASE)),
+            lambda m: datetime.date.today()),
+            
             # 4
             (re.compile(
                 r'''^
