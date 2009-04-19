@@ -18,11 +18,13 @@ Description
 ===========
 
 Perlinpinpin helps you convert french fuzzy date to a python datetime object, it's currently supporting these formats :
+
  * "il y a n semaines / jours / heures / minutes / secondes"
  * "dans n semaines / jours / heures / minutes / secondes"
  * "aujourd'hui"
  * "ce matin"
  * "cet après-midi"
+ * "ce soir"
  * "maintenant"
  * "hier"
  * "après-demain"
