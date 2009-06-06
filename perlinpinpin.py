@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import os, re, datetime, time, calendar
 
-__version__ = 0.7
+__version__ = 0.8
 
 class Perlinpinpin(object):
     def __init__(self):
