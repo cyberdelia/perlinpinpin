@@ -104,9 +104,18 @@ class TestPerlinpinpin(unittest.TestCase):
         self.assertEqual(self.perlinpinpin(u"2/3/2009"), datetime.date(2009, 3, 2))
         self.assertEqual(self.perlinpinpin(u"le 02/03/2009"), datetime.date(2009, 3, 2))
     
+    def test_european_short_style(self):
+        self.assertEqual(self.perlinpinpin(u"02/03/09"), datetime.date(2009, 3, 2))
+        self.assertEqual(self.perlinpinpin(u"2/3/09"), datetime.date(2009, 3, 2))
+        self.assertEqual(self.perlinpinpin(u"le 02/03/09"), datetime.date(2009, 3, 2))
+    
     def test_american_style(self):
         self.assertEqual(self.perlinpinpin(u"01/24/2009"), datetime.date(2009, 1, 24))
         self.assertEqual(self.perlinpinpin(u"1/24/2009"), datetime.date(2009, 1, 24))
+    
+    def test_american_short_style(self):
+        self.assertEqual(self.perlinpinpin(u"01/24/09"), datetime.date(2009, 1, 24))
+        self.assertEqual(self.perlinpinpin(u"1/24/09"), datetime.date(2009, 1, 24))
     
     def test_iso_style(self):
         self.assertEqual(self.perlinpinpin(u"2009-01-09"), datetime.date(2009, 1, 9))

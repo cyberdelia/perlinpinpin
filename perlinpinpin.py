@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import os, re, datetime, calendar
+import os, re, datetime, time, calendar
 
 __version__ = 0.7
 
@@ -189,14 +189,30 @@ class Perlinpinpin(object):
                     /                               #
                     (?P<month>0?[1-9]|10|11|12)     # m or mm
                     /                               #
-                    (?P<year>\d{4})               # yyyy
+                    (?P<year>\d{4})                 # yyyy
                     $                               # EOL
                 ''',
                 (re.VERBOSE | re.IGNORECASE)),
-            lambda m: datetime.date(
-                year=int(m.group('year')),
-                month=int(m.group('month')),
-                day=int(m.group('day')))),
+            lambda m: datetime.date(*time.strptime(
+                "%s %s %s" % (m.group('year'), m.group('month'), m.group('day')), "%Y %m %d")[:3]
+            )),
+                
+            # dd/mm/yy (European short style)
+            (re.compile(
+                r'''^
+                    (le                             # le
+                    \s+)?                           # whitespace
+                    (?P<day>0?[1-9]|[12]\d|30|31)   # d or dd
+                    /                               #
+                    (?P<month>0?[1-9]|10|11|12)     # m or mm
+                    /                               #
+                    (?P<year>\d{2})                 # yy
+                    $                               # EOL
+                ''',
+                (re.VERBOSE | re.IGNORECASE)),
+            lambda m: datetime.date(*time.strptime(
+                "%s %s %s" % (m.group('year'), m.group('month'), m.group('day')), "%y %m %d")[:3]
+            )),
             
             # mm/dd/yyyy (American style)
             (re.compile(
@@ -205,14 +221,28 @@ class Perlinpinpin(object):
                     /                               #
                     (?P<day>0?[1-9]|[12]\d|30|31)   # d or dd
                     /                               #
-                    (?P<year>\d{4})               # yyyy
+                    (?P<year>\d{4})                 # yyyy
                     $                               # EOL
                 ''',
                 (re.VERBOSE | re.IGNORECASE)),
-            lambda m: datetime.date(
-                year=int(m.group('year')),
-                month=int(m.group('month')),
-                day=int(m.group('day')))),
+            lambda m: datetime.date(*time.strptime(
+                "%s %s %s" % (m.group('year'), m.group('month'), m.group('day')), "%Y %m %d")[:3]
+            )),
+            
+            # mm/dd/yy (American short style)
+            (re.compile(
+                r'''^
+                    (?P<month>0?[1-9]|10|11|12)     # m or mm
+                    /                               #
+                    (?P<day>0?[1-9]|[12]\d|30|31)   # d or dd
+                    /                               #
+                    (?P<year>\d{2})                 # yy
+                    $                               # EOL
+                ''',
+                (re.VERBOSE | re.IGNORECASE)),
+            lambda m: datetime.date(*time.strptime(
+                "%s %s %s" % (m.group('year'), m.group('month'), m.group('day')), "%y %m %d")[:3]
+            )),
         
             # yyyy-mm-dd (ISO style)
             (re.compile(
