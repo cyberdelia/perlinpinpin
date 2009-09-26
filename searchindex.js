@@ -1,0 +1,1 @@
+Search.setIndex({desctypes:{},terms:{easy_instal:0,date:0,instal:0,pip:0,stabl:0,find:0,from:0,version:0,perlinpinpin:0,cyberdelia:0,"import":0,you:0,sourc:0,http:0,python:0,fuzzi:0,dan:0,object:0,french:0,releas:0,jour:0,convert:0,github:0,datetim:0,exampl:0,can:0,com:0,latest:0},titles:["perlinpinpin"],modules:{},descrefs:{},filenames:["index"]})
