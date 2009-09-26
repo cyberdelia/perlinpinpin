@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import os, re, datetime, time, calendar
 
-__version__ = 0.8
+__version__ = "0.8.1"
 
 class Perlinpinpin(object):
     def __init__(self):
@@ -324,6 +324,7 @@ class Perlinpinpin(object):
        ]
     
     def parse(self, input, tz=None):
+        """Parse fuzzy date with respect to the given timezone"""
         input = self._normalize(input)
         if tz is not None: os.environ['TZ'] = tz
         for r, f in self.regexp:
@@ -366,4 +367,5 @@ class Perlinpinpin(object):
     
 
 def perlinpinpin(input, tz=None):
+    """Parse fuzzy date with respect to the given timezone"""
     return Perlinpinpin().parse(input, tz)
