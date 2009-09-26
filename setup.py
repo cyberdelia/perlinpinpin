@@ -1,8 +1,26 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from setuptools import setup
+from distutils.core import setup, Command
+from unittest import TextTestRunner, TestLoader
+
 import perlinpinpin
  
+class TestCommand(Command):
+    user_options = []
+     
+    def initialize_options(self):
+        pass
+    
+    def finalize_options(self):
+        pass
+    
+    def run(self):
+        """Run unit tests"""
+        tests = TestLoader().loadTestsFromName('tests')
+        t = TextTestRunner(verbosity=1)
+        t.run(tests)
+    
+
 setup(name='perlinpinpin',
       version=perlinpinpin.__version__,
       description='Convert french fuzzy date to a python date object.',
@@ -18,5 +36,5 @@ setup(name='perlinpinpin',
                       "Topic :: Software Development :: Libraries :: Python Modules" ],
       author='Timothee Peignier',
       author_email='tim@tryphon.org',
-      test_suite='tests'
+      cmdclass = { 'test': TestCommand }
 )
