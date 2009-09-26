@@ -6,6 +6,7 @@ from unittest import TextTestRunner, TestLoader
 import perlinpinpin
  
 class TestCommand(Command):
+    description = "run unit tests"
     user_options = []
      
     def initialize_options(self):
