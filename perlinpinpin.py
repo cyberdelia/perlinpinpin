@@ -1,12 +1,17 @@
 # -*- coding: utf-8 -*-
-import os, re, datetime, time, calendar
+import calendar
+import datetime
+import os
+import re
+import time
 
 __version__ = "0.8.1"
+
 
 class Perlinpinpin(object):
     def __init__(self):
         self.regexp = [
-            # Il y a x 
+            # Il y a x
             (re.compile(
                 r'''^
                     il\sy\sa\s
@@ -27,8 +32,7 @@ class Perlinpinpin(object):
                     minutes=int(m.group('minutes') or 0),
                     hours=int(m.group('hours') or 0),
                     weeks=int(m.group('weeks') or 0))),
-            
-            # Dans x 
+            # Dans x
             (re.compile(
                 r'''^
                     dans\s
@@ -49,7 +53,6 @@ class Perlinpinpin(object):
                     minutes=int(m.group('minutes') or 0),
                     hours=int(m.group('hours') or 0),
                     weeks=int(m.group('weeks') or 0))),
-        
             # Today
             (re.compile(
                 r'''^
@@ -57,7 +60,6 @@ class Perlinpinpin(object):
                 ''',
                 (re.VERBOSE | re.IGNORECASE)),
             lambda m: datetime.date.today()),
-        
             # Now
             (re.compile(
                 r'''^
@@ -65,7 +67,6 @@ class Perlinpinpin(object):
                 ''',
                 (re.VERBOSE | re.IGNORECASE)),
             lambda m: datetime.date.today()),
-        
             # Tomorrow
             (re.compile(
                 r'''^
@@ -73,7 +74,6 @@ class Perlinpinpin(object):
                 ''',
                 (re.VERBOSE | re.IGNORECASE)),
             lambda m: datetime.date.today() + datetime.timedelta(days=1)),
-        
             # Yesterday
             (re.compile(
                 r'''^
@@ -81,7 +81,6 @@ class Perlinpinpin(object):
                 ''',
                 (re.VERBOSE | re.IGNORECASE)),
             lambda m: datetime.date.today() - datetime.timedelta(days=1)),
-            
             # After-tomorrow
             (re.compile(
                 r'''^
@@ -89,7 +88,6 @@ class Perlinpinpin(object):
                 ''',
                 (re.VERBOSE | re.IGNORECASE)),
             lambda m: datetime.date.today() + datetime.timedelta(days=2)),
-            
             # Before-yesterday
             (re.compile(
                 r'''^
@@ -97,7 +95,6 @@ class Perlinpinpin(object):
                 ''',
                 (re.VERBOSE | re.IGNORECASE)),
             lambda m: datetime.date.today() - datetime.timedelta(days=2)),
-        
             # This morning
             (re.compile(
                 r'''^
@@ -107,7 +104,6 @@ class Perlinpinpin(object):
                 ''',
                 (re.VERBOSE | re.IGNORECASE)),
             lambda m: datetime.date.today()),
-            
             # This afternoon
             (re.compile(
                 r'''^
@@ -117,7 +113,6 @@ class Perlinpinpin(object):
                 ''',
                 (re.VERBOSE | re.IGNORECASE)),
             lambda m: datetime.date.today()),
-            
             # This evening
             (re.compile(
                 r'''^
@@ -127,7 +122,6 @@ class Perlinpinpin(object):
                 ''',
                 (re.VERBOSE | re.IGNORECASE)),
             lambda m: datetime.date.today()),
-            
             # 4
             (re.compile(
                 r'''^
@@ -141,7 +135,6 @@ class Perlinpinpin(object):
                 (re.VERBOSE | re.IGNORECASE)),
             lambda m: datetime.date.today().replace(
                 day=int(m.group('day')))),
-        
             # 4 Janvier
             (re.compile(
                 r'''^
@@ -157,8 +150,7 @@ class Perlinpinpin(object):
                 (re.VERBOSE | re.IGNORECASE)),
             lambda m: datetime.date.today().replace(
                 day=int(m.group('day')),
-                month=self._parseMonth(m.group('month')))),
-        
+                month=self._month(m.group('month')))),
             # 4 Janvier 2003
             (re.compile(
                 r'''^
@@ -177,9 +169,8 @@ class Perlinpinpin(object):
                 (re.VERBOSE | re.IGNORECASE)),
             lambda m: datetime.date(
                 year=int(m.group('year')),
-                month=self._parseMonth(m.group('month')),
+                month=self._month(m.group('month')),
                 day=int(m.group('day')))),
-        
             # dd/mm/yyyy (European style, default in case of doubt)
             (re.compile(
                 r'''^
@@ -196,7 +187,6 @@ class Perlinpinpin(object):
             lambda m: datetime.date(*time.strptime(
                 "%s %s %s" % (m.group('year'), m.group('month'), m.group('day')), "%Y %m %d")[:3]
             )),
-                
             # dd/mm/yy (European short style)
             (re.compile(
                 r'''^
@@ -213,7 +203,6 @@ class Perlinpinpin(object):
             lambda m: datetime.date(*time.strptime(
                 "%s %s %s" % (m.group('year'), m.group('month'), m.group('day')), "%y %m %d")[:3]
             )),
-            
             # mm/dd/yyyy (American style)
             (re.compile(
                 r'''^
@@ -228,7 +217,6 @@ class Perlinpinpin(object):
             lambda m: datetime.date(*time.strptime(
                 "%s %s %s" % (m.group('year'), m.group('month'), m.group('day')), "%Y %m %d")[:3]
             )),
-            
             # mm/dd/yy (American short style)
             (re.compile(
                 r'''^
@@ -243,7 +231,6 @@ class Perlinpinpin(object):
             lambda m: datetime.date(*time.strptime(
                 "%s %s %s" % (m.group('year'), m.group('month'), m.group('day')), "%y %m %d")[:3]
             )),
-        
             # yyyy-mm-dd (ISO style)
             (re.compile(
                 r'''^
@@ -259,7 +246,6 @@ class Perlinpinpin(object):
                 year=int(m.group('year')),
                 month=int(m.group('month')),
                 day=int(m.group('day')))),
-        
             # yyyymmdd
             (re.compile(
                 r'''^
@@ -273,7 +259,6 @@ class Perlinpinpin(object):
                 year=int(m.group('year')),
                 month=int(m.group('month')),
                 day=int(m.group('day')))),
-        
             # Semaine dernière
             (re.compile(
                 r'''^
@@ -286,7 +271,6 @@ class Perlinpinpin(object):
                 ''',
                 (re.VERBOSE | re.IGNORECASE)),
             lambda m: datetime.date.today() - datetime.timedelta(days=7)),
-            
             # Semaine prochaine
             (re.compile(
                 r'''^
@@ -299,7 +283,6 @@ class Perlinpinpin(object):
                 ''',
                 (re.VERBOSE | re.IGNORECASE)),
             lambda m: datetime.date.today() + datetime.timedelta(days=7)),
-            
             # Mardi prochain
             (re.compile(
                 r'''^
@@ -309,8 +292,7 @@ class Perlinpinpin(object):
                     $                               # EOL
                 ''',
                 (re.VERBOSE | re.IGNORECASE)),
-            lambda m: self._nextWeekday(self._parseWeekday(m.group('weekday')))),
-        
+            lambda m: self._next_weekday(self._weekday(m.group('weekday')))),
             # Mardi dernier
             (re.compile(
                 r'''^
@@ -320,52 +302,60 @@ class Perlinpinpin(object):
                     $                               # EOL
                 ''',
                 (re.VERBOSE | re.IGNORECASE)),
-            lambda m: self._lastWeekday(self._parseWeekday(m.group('weekday')))),
+            lambda m: self._last_weekday(self._weekday(m.group('weekday')))),
        ]
-    
-    def parse(self, input, tz=None):
+
+    def parse(self, text, timezone=None):
         """Parse fuzzy date with respect to the given timezone"""
-        input = self._normalize(input)
-        if tz is not None: os.environ['TZ'] = tz
-        for r, f in self.regexp:
-            m = r.match(input.strip())
-            if m:
-                return f(m)
+        text = self._normalize(text)
+        if timezone is not None:
+            os.environ['TZ'] = timezone
+        for regexp, func in self.regexp:
+            match = regexp.match(text.strip())
+            if match:
+                return func(match)
         raise ValueError
-    
-    def _normalize(self, input):
+
+    def _normalize(self, text):
+        """Remove accents from text"""
         import unicodedata
-        return unicodedata.normalize('NFKD', unicode(input)).encode('ASCII', 'ignore')
-    
-    def _parseMonth(self, input):
+        return unicodedata.normalize('NFKD', unicode(text)).encode('ASCII', 'ignore')
+
+    def _month(self, text):
+        """Get the month as a decimal number"""
         months = "Janvier Fevrier Mars Avril Mai Juin Juillet Aout Septembre Octobre Novembre Decembre".split(' ')
         for i, month in enumerate(months):
-            p = re.compile(input, re.IGNORECASE)
-            if p.match(month): return i+1
+            regexp = re.compile(text, re.IGNORECASE)
+            if regexp.match(month):
+                return i + 1
         else:
             raise ValueError
-    
-    def _parseWeekday(self, input):
+
+    def _weekday(self, text):
+        """Get weekday as a decimal number"""
         days = "Lundi Mardi Mercredi Jeudi Vendredi Samedi Dimanche".split(' ')
         for i, day in enumerate(days):
-            p = re.compile(input, re.IGNORECASE)
-            if p.match(day): return i
+            regexp = re.compile(text, re.IGNORECASE)
+            if regexp.match(day):
+                return i
         else:
             raise ValueError
-    
-    def _nextWeekday(self, weekday):
+
+    def _next_weekday(self, weekday):
+        """Get next weekday as a date"""
         day = datetime.date.today() + datetime.timedelta(days=1)
         while calendar.weekday(*day.timetuple()[:3]) != weekday:
             day = day + datetime.timedelta(days=1)
         return day
-    
-    def _lastWeekday(self, weekday):
+
+    def _last_weekday(self, weekday):
+        """Get previous weekday as a date"""
         day = datetime.date.today() - datetime.timedelta(days=1)
         while calendar.weekday(*day.timetuple()[:3]) != weekday:
             day = day - datetime.timedelta(days=1)
         return day
-    
 
-def perlinpinpin(input, tz=None):
+
+def perlinpinpin(text, timezone=None):
     """Parse fuzzy date with respect to the given timezone"""
-    return Perlinpinpin().parse(input, tz)
+    return Perlinpinpin().parse(text, timezone)
