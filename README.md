@@ -40,14 +40,17 @@ Perlinpinpin helps you convert french fuzzy date to a python datetime object, it
  * "mardi dernier"
  * "jeudi prochain"
 
+It also allows you to find dates in free text like : 
+ "Le match s'est déroulé le 2 décembre, malgré la pluie."
+
 Authors
 =======
 
-Timothée Peignier <tim@tryphon.org>
+Timothée Peignier <timothee.peignier@tryphon.org>
 
 Perlinpinpin is based on the work of Roberto De Almeida <rob@pydap.org> on magicdate.
 
 Copyright
 =========
 
-Perlinpinpin is : Copyright 2009 Timothée Peignier <tim@tryphon.org>
+Perlinpinpin is : Copyright 2009-2011 Timothée Peignier <timothee.peignier@tryphon.org>
