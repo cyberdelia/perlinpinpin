@@ -26,7 +26,7 @@ class TestCommand(Command):
 setup(name='perlinpinpin',
       version=perlinpinpin.__version__,
       description='Convert french fuzzy date to a python date object.',
-      long_description="Convert from french fuzzy dates like 'hier', 'il y a 1 semaine et 1 jour', 'mardi prochain', '4 Janvier', etc., to a date object.",
+      long_description="Convert french fuzzy dates like 'hier', 'il y a 1 semaine et 1 jour', 'mardi prochain', '4 Janvier', etc., to a date object.",
       py_modules=['perlinpinpin'],
       license='BSD License',
       url='http://cyberdelia.github.com/perlinpinpin/',
