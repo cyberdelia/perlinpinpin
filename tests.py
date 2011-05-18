@@ -21,7 +21,7 @@ class TestPerlinpinpin(unittest.TestCase):
         datetime.date = self.old_date
 
     def test_exception(self):
-        self.assertRaises(ValueError, self.perlinpinpin, u"4 Jnaier")
+        self.assertRaises(ValueError, self.perlinpinpin, u"35 Jnaier")
         self.assertRaises(ValueError, self.perlinpinpin, u"Luni prochain")
         self.assertRaises(ValueError, self.perlinpinpin, u"supercalifragilisticexpialidocious")
 
@@ -62,9 +62,10 @@ class TestPerlinpinpin(unittest.TestCase):
 
     def test_last_tuesday(self):
         self.assertEqual(self.perlinpinpin(u"mardi dernier"), datetime.date(2009, 3, 3))
-
+        
     def test_next_tuesday(self):
         self.assertEqual(self.perlinpinpin(u"mardi prochain"), datetime.date(2009, 3, 10))
+        self.assertEqual(self.perlinpinpin(u"mardi suivant"), datetime.date(2009, 3, 10))
 
     def test_last_week(self):
         self.assertEqual(self.perlinpinpin(u"la semaine dernière"), datetime.date(2009, 2, 27))

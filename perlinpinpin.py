@@ -5,12 +5,72 @@ import os
 import re
 import time
 
-__version__ = "0.8.2"
+__version__ = "0.9.0"
 
 
 class Perlinpinpin(object):
+    days = "Lundi Mardi Mercredi Jeudi Vendredi Samedi Dimanche".split(' ')
+    months = "Janvier Fevrier Mars Avril Mai Juin Juillet Aout Septembre Octobre Novembre Decembre".split(' ')
+
     def __init__(self):
-        self.regexp = [
+        relative = r"(?:aujourd[']?hui|hier|maintenant|matin|soir|apres[\s-]?midi|demain|apres[\s-]?demain|avant[\s-]?hier)"
+        relative_spec = r"(?:suivant[es]?|précédent[es]?|prochain[es]?|dernier[es]?)"
+        
+        relative_delta = r"(?:dans|il\sy\sa)"
+        delta = r"(?:%s\s+(?:\d+\s+(?:(?:semaine|jour|heure|minute|seconde)[s]?)+[^\d]*)+)" % relative_delta
+        
+        weekday = r"(?:%s)" % '|'.join(Perlinpinpin.days)
+        month = r"(?:%s)" % '|'.join(Perlinpinpin.months)
+        
+        relative_weekday = r"(?:%s\s*%s)" % (weekday, relative_spec)
+        relative_week = r"(?:semaine\s*%s)" %  relative_spec
+        
+        # 1 - 31
+        cardinal_monthday = r"(?:[1-9]|[0-2][0-9]|3[01])"
+        monthday = r"(?:%s\s*(ier|er|iere)?)" % cardinal_monthday
+        
+        day_month = r"(?:(%s)?%s\s*%s)" % (
+            weekday, monthday, month
+        )
+        month_day = r"(?:%s\s*%s)" % (month, monthday)
+        day_month_year = r"(?:(?:%s|%s)[-\s]*\d{4})" % (
+            day_month, month_day
+        )
+
+        yyyymmdd = r"(?:\d{4}[-/]?\d{1,2}[-/]?\d{1,2})"
+        ddmmyy = r"(?:\d{1,2}[-/]?\d{1,2}[-/]?\d{2})"
+        ddmmyyyy = r"(?:\d{1,2}[-/]?\d{1,2}[-/]?\d{4})"
+        
+        self.detect = re.compile(r"""
+            \b(
+              %(relative)s
+            | %(relative_weekday)s  # Vendredi dernier
+            | %(relative_week)s     # Semaine suivante
+            | %(delta)s             # Dans 1 semaine
+            | %(day_month_year)s    # 12 Décembre, 1985
+            | %(day_month)s         # 12 Septembre
+            | %(month_day)s         # Novembre 13
+            | %(yyyymmdd)s          # 1986/11/13
+            | %(ddmmyyyy)s          # 11-13-1986
+            | %(ddmmyy)s            # 11-13-86
+            | %(monthday)s          # 12
+            )\b
+        """ % {
+            'relative': relative,
+            'relative_weekday': relative_weekday,
+            'relative_week': relative_week,
+            'delta': delta,
+            'weekday': weekday,
+            'monthday': monthday,
+            'day_month_year': day_month_year,
+            'day_month': day_month,
+            'month_day': month_day,
+            'yyyymmdd': yyyymmdd,
+            'ddmmyy': ddmmyy,
+            'ddmmyyyy': ddmmyyyy,
+        }, (re.VERBOSE | re.IGNORECASE))
+
+        self.convert = [
             # Il y a x
             (re.compile(
                 r'''^
@@ -56,7 +116,7 @@ class Perlinpinpin(object):
             # Today
             (re.compile(
                 r'''^
-                    aujourd\'?hui                    # Today
+                    aujourd[']?hui                    # Today
                 ''',
                 (re.VERBOSE | re.IGNORECASE)),
             lambda m: datetime.date.today()),
@@ -84,21 +144,20 @@ class Perlinpinpin(object):
             # After-tomorrow
             (re.compile(
                 r'''^
-                    apres\-?\s?demain              # Afer-tomorrow
+                    apres[\s-]?demain              # After-tomorrow
                 ''',
                 (re.VERBOSE | re.IGNORECASE)),
             lambda m: datetime.date.today() + datetime.timedelta(days=2)),
             # Before-yesterday
             (re.compile(
                 r'''^
-                    avant\-?\s?hier              # Before-yesterday
+                    avant[\s-]?hier              # Before-yesterday
                 ''',
                 (re.VERBOSE | re.IGNORECASE)),
             lambda m: datetime.date.today() - datetime.timedelta(days=2)),
             # This morning
             (re.compile(
                 r'''^
-                    (ce\s+)?                        # this
                     matin                           # morning
                     $                               # EOL
                 ''',
@@ -107,8 +166,7 @@ class Perlinpinpin(object):
             # This afternoon
             (re.compile(
                 r'''^
-                    (cet\s+)?                       # this
-                    apres\-?midi                    # afternoon
+                    apres[\s-]?midi                    # afternoon
                     $                               # EOL
                 ''',
                 (re.VERBOSE | re.IGNORECASE)),
@@ -116,7 +174,6 @@ class Perlinpinpin(object):
             # This evening
             (re.compile(
                 r'''^
-                    (ce\s+)?                        # this
                     soir                            # evening
                     $                               # EOL
                 ''',
@@ -125,28 +182,24 @@ class Perlinpinpin(object):
             # 4
             (re.compile(
                 r'''^
-                    (le                             # le
-                    \s+)?                           # whitespace
-                    (\w+\s+)?                       # vendredi
-                    (?P<day>\d{1,2})                # 4
-                    (?:(\s+)?(ier|er|iere))?        # optional suffix
+                    (%s)?                           # vendredi
+                    (?P<day>[1-9]|[0-2][0-9]|3[01])  # 4
+                    (?:\s*(ier|er|iere)?)           # optional suffix
                     $                               # EOL
-                ''',
+                ''' % weekday,
                 (re.VERBOSE | re.IGNORECASE)),
             lambda m: datetime.date.today().replace(
                 day=int(m.group('day')))),
             # 4 Janvier
             (re.compile(
                 r'''^
-                    (le                             # le
-                    \s+)?                           # whitespace
-                    (\w+\s+)?                       # vendredi
-                    (?P<day>\d{1,2})                # 4
-                    (?:(\s+)?(ier|er|iere))?        # optional suffix
+                    (%s)?                           # vendredi
+                    (?P<day>[1-9]|[0-2][0-9]|3[01])  # 4
+                    (?:\s*(ier|er|iere)?)           # optional suffix
                     \s+                             # whitespace
-                    (?P<month>\w+)                  # Janvier
+                    (?P<month>%s+)                  # Janvier
                     $                               # EOL
-                ''',
+                ''' % (weekday, '|'.join(Perlinpinpin.months)),
                 (re.VERBOSE | re.IGNORECASE)),
             lambda m: datetime.date.today().replace(
                 day=int(m.group('day')),
@@ -154,18 +207,16 @@ class Perlinpinpin(object):
             # 4 Janvier 2003
             (re.compile(
                 r'''^
-                    (le                             # le
-                    \s+)?                           # whitespace
-                    (\w+\s+)?                       # vendredi
-                    (?P<day>\d{1,2})                # 4
-                    (?:(\s+)?(ier|er|iere))?        # optional suffix
+                    (%s)?                           # vendredi
+                    (?P<day>[1-9]|[0-2][0-9]|3[01])  # 4
+                    (?:\s*(ier|er|iere)?)           # optional suffix
                     \s+                             # whitespace
-                    (?P<month>\w+)                  # Janvier
+                    (?P<month>%s+)                  # Janvier
                     ,?                              # optional comma
                     \s+                             # whitespace
                     (?P<year>\d{4})                 # 2003
                     $                               # EOL
-                ''',
+                ''' % (weekday, '|'.join(Perlinpinpin.months)),
                 (re.VERBOSE | re.IGNORECASE)),
             lambda m: datetime.date(
                 year=int(m.group('year')),
@@ -174,12 +225,10 @@ class Perlinpinpin(object):
             # dd/mm/yyyy (European style, default in case of doubt)
             (re.compile(
                 r'''^
-                    (le                             # le
-                    \s+)?                           # whitespace
-                    (?P<day>0?[1-9]|[12]\d|30|31)   # d or dd
-                    /                               #
-                    (?P<month>0?[1-9]|10|11|12)     # m or mm
-                    /                               #
+                    (?P<day>[1-9]|[0-2][0-9]|3[01]) # d or dd
+                    [-/]?                           #
+                    (?P<month>[1-9]|0[0-9]|1[0-2])      # m or mm
+                    [-/]?                           #
                     (?P<year>\d{4})                 # yyyy
                     $                               # EOL
                 ''',
@@ -190,12 +239,10 @@ class Perlinpinpin(object):
             # dd/mm/yy (European short style)
             (re.compile(
                 r'''^
-                    (le                             # le
-                    \s+)?                           # whitespace
-                    (?P<day>0?[1-9]|[12]\d|30|31)   # d or dd
-                    /                               #
-                    (?P<month>0?[1-9]|10|11|12)     # m or mm
-                    /                               #
+                    (?P<day>[1-9]|[0-2][0-9]|3[01]) # d or dd
+                    [-/]?                           #
+                    (?P<month>[1-9]|0[0-9]|1[0-2])      # m or mm
+                    [-/]?                           #
                     (?P<year>\d{2})                 # yy
                     $                               # EOL
                 ''',
@@ -206,10 +253,10 @@ class Perlinpinpin(object):
             # mm/dd/yyyy (American style)
             (re.compile(
                 r'''^
-                    (?P<month>0?[1-9]|10|11|12)     # m or mm
-                    /                               #
-                    (?P<day>0?[1-9]|[12]\d|30|31)   # d or dd
-                    /                               #
+                    (?P<month>[1-9]|0[0-9]|1[0-2])      # m or mm
+                    [-/]?                           #
+                    (?P<day>[1-9]|[0-2][0-9]|3[01]) # d or dd
+                    [-/]?                           #
                     (?P<year>\d{4})                 # yyyy
                     $                               # EOL
                 ''',
@@ -220,10 +267,10 @@ class Perlinpinpin(object):
             # mm/dd/yy (American short style)
             (re.compile(
                 r'''^
-                    (?P<month>0?[1-9]|10|11|12)     # m or mm
-                    /                               #
-                    (?P<day>0?[1-9]|[12]\d|30|31)   # d or dd
-                    /                               #
+                    (?P<month>[1-9]|0[0-9]|1[0-2])      # m or mm
+                    [-/]?                           #
+                    (?P<day>[1-9]|[0-2][0-9]|3[01]) # d or dd
+                    [-/]?                           #
                     (?P<year>\d{2})                 # yy
                     $                               # EOL
                 ''',
@@ -235,23 +282,10 @@ class Perlinpinpin(object):
             (re.compile(
                 r'''^
                     (?P<year>\d{4})                 # yyyy
-                    -                               #
-                    (?P<month>0?[1-9]|10|11|12)     # m or mm
-                    -                               #
-                    (?P<day>0?[1-9]|[12]\d|30|31)   # d or dd
-                    $                               # EOL
-                ''',
-                (re.VERBOSE | re.IGNORECASE)),
-            lambda m: datetime.date(
-                year=int(m.group('year')),
-                month=int(m.group('month')),
-                day=int(m.group('day')))),
-            # yyyymmdd
-            (re.compile(
-                r'''^
-                    (?P<year>\d{4})                 # yyyy
-                    (?P<month>0?[1-9]|10|11|12)     # m or mm
-                    (?P<day>0?[1-9]|[12]\d|30|31)   # d or dd
+                    [-/]?                           #
+                    (?P<month>[1-9]|0[0-9]|1[0-2])      # m or mm
+                    [-/]?                           #
+                    (?P<day>[1-9]|[0-2][0-9]|3[01]) # d or dd
                     $                               # EOL
                 ''',
                 (re.VERBOSE | re.IGNORECASE)),
@@ -262,11 +296,9 @@ class Perlinpinpin(object):
             # Semaine dernière
             (re.compile(
                 r'''^
-                    (la                             # la
-                    \s+)?                           # whitespace
                     semaine                         # week
                     \s+                             # whitespace
-                    derniere                        # last
+                    (derniere|precedente)?          # last
                     $                               # EOL
                 ''',
                 (re.VERBOSE | re.IGNORECASE)),
@@ -274,11 +306,9 @@ class Perlinpinpin(object):
             # Semaine prochaine
             (re.compile(
                 r'''^
-                    (la                             # la
-                    \s+)?                           # whitespace
                     semaine                         # week
                     \s+                             # whitespace
-                    prochaine                       # last
+                    (prochaine|suivante)?           # last
                     $                               # EOL
                 ''',
                 (re.VERBOSE | re.IGNORECASE)),
@@ -288,7 +318,7 @@ class Perlinpinpin(object):
                 r'''^
                     (?P<weekday>\w+)                # Mardi
                     \s+                             # whitespace
-                    prochain                        # next
+                    (prochain|suivant)?             # next
                     $                               # EOL
                 ''',
                 (re.VERBOSE | re.IGNORECASE)),
@@ -297,24 +327,37 @@ class Perlinpinpin(object):
             (re.compile(
                 r'''^
                     (?P<weekday>\w+)                # Mardi
-                    (\s+                            # whitespace
-                    dernier)?                       # last
+                    \s+                             # whitespace
+                    (dernier|precedent)?            # last
                     $                               # EOL
                 ''',
                 (re.VERBOSE | re.IGNORECASE)),
             lambda m: self._last_weekday(self._weekday(m.group('weekday')))),
        ]
 
-    def parse(self, text, timezone=None):
-        """Parse fuzzy date with respect to the given timezone"""
+    def extract(self, text, timezone=None):
+        """Extract dates from fuzzy text with respect to the given timezone"""
         text = self._normalize(text)
-        if timezone is not None:
+        if timezone:
             os.environ['TZ'] = timezone
-        for regexp, func in self.regexp:
-            match = regexp.match(text.strip())
+        matches = []
+        for match in self.detect.finditer(text.strip()):
+            if match:
+                date = self.parse(match.group())
+                if date:
+                    matches.append(date)
+        return matches
+
+    def parse(self, date, timezone=None):
+        """Parse fuzzy date with respect to the given timezone"""
+        date = self._normalize(date)
+        if timezone:
+            os.environ['TZ'] = timezone
+        for regexp, func in self.convert:
+            match = regexp.match(date.strip())
             if match:
                 return func(match)
-        raise ValueError
+        return None
 
     def _normalize(self, text):
         """Remove accents from text"""
@@ -323,8 +366,7 @@ class Perlinpinpin(object):
 
     def _month(self, text):
         """Get the month as a decimal number"""
-        months = "Janvier Fevrier Mars Avril Mai Juin Juillet Aout Septembre Octobre Novembre Decembre".split(' ')
-        for i, month in enumerate(months):
+        for i, month in enumerate(Perlinpinpin.months):
             regexp = re.compile(text, re.IGNORECASE)
             if regexp.match(month):
                 return i + 1
@@ -333,8 +375,7 @@ class Perlinpinpin(object):
 
     def _weekday(self, text):
         """Get weekday as a decimal number"""
-        days = "Lundi Mardi Mercredi Jeudi Vendredi Samedi Dimanche".split(' ')
-        for i, day in enumerate(days):
+        for i, day in enumerate(Perlinpinpin.days):
             regexp = re.compile(text, re.IGNORECASE)
             if regexp.match(day):
                 return i
@@ -357,5 +398,13 @@ class Perlinpinpin(object):
 
 
 def perlinpinpin(text, timezone=None):
-    """Parse fuzzy date with respect to the given timezone"""
+    dates = Perlinpinpin().extract(text, timezone)
+    if dates:
+        return dates[0]
+    raise ValueError
+
+def parse(text, timezone=None):
     return Perlinpinpin().parse(text, timezone)
+
+def extract(text, timezone=None):
+    return Perlinpinpin().extract(text, timezone)
